@@ -7,3 +7,58 @@ HTTP -> Hypertext Transfer Protocol and is used to structure requests and respon
 The transfer of resources happens using TCP (Transmission Control Protocol).
 
 URL -> Uniform Resource Locator
+
+Django comes with an admin panel, a user authentication system, a database, and something called object-relational mapper (ORM) 
+that helps a web application interact with a database. These are some of the “batteries” included in Django to help build projects 
+faster without having to worry about which tools to use.
+
+
+The Django project describes itself as an MTV framework, using Models, Templates and Views.
+
+* The model portion deals with data and databases, it can retrieve, store, and change data in a database.
+
+* The template determines how the data looks on a web page.
+
+* The view describes the data to be presented, and passes this information to the template.
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+STARTING A DJANGO PROJECT
+
+* django-admin <command> [options] ->  Django provides us with django-admin, a command-line utility that helps us with a variety of administrative tasks.
+
+* django-admin help -> Running django-admin help will provide a list of possible commands.
+
+* django-admin startproject <projectname> -> A Django project can be easily created with the startproject command. It takes a couple of 
+  options– the name of the project and optionally the directory for our project.
+
+
+Django will then create a directory for the project, or the project root folder.
+
+* Inside the project root folder is a Python file, manage.py, that contains a collection of useful functions used to administer the project. This file 
+  performs the same actions as django-admin but is set specifically to the project.
+
+* Alongside the manage.py is another directory with the same name as the project. This folder is treated as a Python package because of the presence
+  of __init__.py, and inside this directory contains important settings and configuration files for the project.
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+CONFIGURING DJANGO SETTINGS
+
+## Important for us are settings.py and urls.py ##
+
+
+
+
+
+
+
+
+
+
+
+
+
