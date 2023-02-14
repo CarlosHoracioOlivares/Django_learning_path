@@ -1,5 +1,7 @@
 Django Notes
 
+path: /g/My Drive/python/tms
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 HTTP -> Hypertext Transfer Protocol and is used to structure requests and responses over the internet
@@ -149,6 +151,11 @@ def index(request):
 THE FUNCTIONS MUST BE WRITTEN INSIDE views.py code
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+USING A VIEW TO SEND AN HTML PAGE 
+
+We can use Django to render an HTML page when a view function is called. 
 
 
 
