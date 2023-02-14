@@ -1,6 +1,6 @@
 Django Notes
 
-------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 HTTP -> Hypertext Transfer Protocol and is used to structure requests and responses over the internet
 
@@ -22,7 +22,7 @@ The Django project describes itself as an MTV framework, using Models, Templates
 * The view describes the data to be presented, and passes this information to the template.
 
 
-------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 STARTING A DJANGO PROJECT
 
@@ -44,11 +44,117 @@ Django will then create a directory for the project, or the project root folder.
 
 
 
-------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CONFIGURING DJANGO SETTINGS
 
 ## Important for us are settings.py and urls.py ##
+
+Since the project comes pre-configured, we can start a server to test that the project works. 
+
+A development server can be started by using manage.py and providing the runserver command. 
+
+This command must be run in the root directory, the same directory where manage.py is located. 
+
+By default, Django will start a development server with port 8000, but an alternate port can be provided as an option.
+
+
+* python3 manage.py runserver <port_number>
+
+
+The Django development server will hot-reload as changes are made to the project, so we don’t have to keep restarting the server as we develop. 
+
+* The server will keep running until we stop it with the ctrl + c.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MIGRATING THE DATABASE 
+
+A migration is a pending database change. As we saw in settings.py, by default, Django will have some apps installed. 
+
+Some of these default apps, for example, the admin interface, use the database and the migrations must be applied to the SQLite database.
+
+
+* Whenever we make changes to the model of the database, we must apply the changes by running python3 manage.py migrate
+
+
+By applying our migration, we have access to the admin app! The admin app comes pre-installed and can be navigated to since it has its URL 
+provided in urls.py we saw earlier. 
+
+At the moment there aren’t any admin users but we can still visit localhost/admin to see the admin login page.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DJANGO APPS
+
+A Django app is a submodule to a project, that contains the code for a specific feature.
+
+In the submodule, we’ll find things like: a models.py file, a migration directory, and other files and directories related to the application.
+
+A Django app can be created by running the startapp command in the project root directory, the directory with manage.py, and providing the name 
+of the app as an additional option.
+
+* python3 manage.py startapp myapp
+
+In order for Django to be aware of the app’s existence, it needs to be added to the list of INSTALLED_APPS in the project’s settings.py file.
+
+INSTALLED_APPS = [
+  "myapp.apps.MyappConfig"
+]
+
+AFTER CREATING AN APP YOU NEED TO ADD IT TO THE INSTALLED_APP LIST
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATING A VIEW FOR AN APP
+
+Views are the information brokers in a Django application that decides what data gets delivered to a template and displayed.
+
+*  A view is a class or function that processes a request and sends a response back.
+
+The view function may:
+
+1) Check to see if the customer is logged in
+
+2) Request their profile information from a database
+
+3) Format the information in a template
+
+4) Send back the profile page as an HTML file for the customer to view in their browser
+
+
+In Django, requests, and responses are handled as HttpRequest and HttpResponse objects from a module called django.http.
+
+
+When a page is requested:
+1) Django creates an HttpRequest object that contains information about the request
+
+2)Django loads the appropriate view, passing the HttpRequest as the first argument to the view function
+
+
+Each view function is responsible for returning an HttpResponse object. The HttpResponse response object can be the HTML 
+contents of a web page, a redirect, an error, an XML document, an image, or just about anything that can display on a web page.
+
+
+A simple view function would look like this:
+
+def index(request):
+	return HttpResponse("this is the response!")
+
+
+THE FUNCTIONS MUST BE WRITTEN INSIDE views.py code
+
+
+
+
+
+
+
+
 
 
 
