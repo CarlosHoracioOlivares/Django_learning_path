@@ -1,1 +1,9 @@
 Django Notes
+
+------------------------------------------------------------------------------------------------------------------------
+
+HTTP -> Hypertext Transfer Protocol and is used to structure requests and responses over the internet
+
+The transfer of resources happens using TCP (Transmission Control Protocol).
+
+URL -> Uniform Resource Locator
