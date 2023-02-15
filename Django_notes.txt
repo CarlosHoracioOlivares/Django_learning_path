@@ -334,29 +334,169 @@ With both URLconfs set up, we can properly view our routes for the application: 
 
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FORTUNE TELLER - PROJECT
+
+1) start new project 
+
+* django-admin startproject fortuneteller
 
 
 
+2) change directory to the fortuneteller project just created and run the migrate command
+
+* cd fortuneteller
+
+* python3 manage.py migrate
 
 
 
+3) run the server to check for errors
+
+* python3 manage.py runserver 0.0.0.0:4001 
+
+to stop the development server -> ctrl + c
 
 
 
+4) create a new app inside the project: "randomfortune"
+
+* python3 manage.py startapp randomfortune
 
 
 
+5) add the new app <randomfortune> to the list of installed apps for our Django project to be aware of it.
+
+inside of settings.py (inside the project folder): find the list named INSTALLED_APPS and add the config file for randomfortune
+by inlcuiding:
+
+"randomfortune.apps.RandomfortuneConfig" to the list.
+
+
+6) create a template: 
+
+First, we will create the template directories to namespace the template. 
+
+Inside the project app directory, randomfortune/, create a folder named, templates. 
+Next, within the newly created, templates/, create a folder named randomfortune to namespace our template file.
+
+crate the file fortune.html which contains the template html code. 
+
+now we need to create the view functions and the URLconfig to watch it on the web app.
+
+
+7) Create a view function.
+
+
+To send fortune.html to our client, we’ll write a view function and send it when the page is requested.
+
+Inside the randomfortune app, open views.py. Define a new function named fortune() that takes a single parameter, request.
+
+In fortune(), return the render function with two arguments, the request and the path to fortune.html 
+as a string, "randomfortune/fortune.html".
+
+###
+
+from django.shortcuts import render
+
+# Create your views here.
+def fortune(requst):
+  return render(request, "randomfortune/fortune.html")
+
+###
+
+
+8) Wire up view.
+
+Our fortune() view function sends back fortune.html when called. We’ll need to tell Django which URL we want to direct to this function.
+
+First, create the URLconf for the randomfortune app by creating a file named urls.py inside the app directory.
 
 
 
+Inside urls.py, we’ll need to import a couple of things to call the view function when the URL is requested.
+
+At the top of urls.py import:
+
+-> path module from django.urls
+
+-> the functions from views.py.
+
+
+###
+
+from django.urls import path
+from django.urls import views
+
+urlpatterns = [
+  path("", views.fortune)
+]
+
+###
+
+
+9) Now that we have our app’s URLconfig setup, we will have to import it in the project’s URLconfig for the URLs to be picked 
+up by the Django project.
+
+
+We’ll have to import the include module to include the URL configuration file.
+
+
+Inside fortuneteller/fortuneteller, import the include module from django.urls.
+
+In the existing urlpatterns list, add another path() with the arguments:
+
+"" to reference the home page
+
+include() with randomfortune‘s URLs as a string.
+
+###
+
+from django.contrib import admin
+from django.urls import path
+from django.urls import include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path("", include("randomfortune.urls"))
+]
+
+###
+
+
+10) Sending a Context to the Template
+
+
+Create a list of fortunes named fortuneList inside our app’s views.py file. Define it outside of the fortune() function.
+
+To select a random fortune from the list we’ll use a built-in Python function, random.choice().
+
+###
+
+def fortune(request):
+  fortune = random.choice(fortuneList)
+  context = {"fortune", fortune}
+  return render(request, "randomfortune/fortune.html", context)
+
+###
+
+
+Great! We now have a random fortune stored in fortune. To send it to the HTML template, we’ll create 
+a context variable to send with the template.
 
 
 
+11) Render context inside template
 
 
+The last step to render the fortune in the template is to use the Django template language to replace 
+the placeholder text. Inside fortune.html, between the <p></p> tags, replace the text with {{ fortune }}.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+TEMPLATES
 
 
 
