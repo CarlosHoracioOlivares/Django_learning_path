@@ -267,18 +267,70 @@ On the internet, every page needs its own URL because each URL displays unique i
 
 In Django, we can use something called a URLconf, for URL configuration.
 
+An app’s URLconf is located in a file named urls.py inside the app’s directory.
+
+At the top of the urls.py we import the path object from django.urls and we import the view functions from views.py and 
+add routes that direct to each of our view functions.
 
 
+urls.py will look like this:
+
+###
+
+from django.urls import path
+from . import views
+ 
+urlpatterns = [
+  path('', views.home),
+  path('profile/', views.profile, name="profile")  
+]
+
+###
 
 
+After the import statements is a list of patterns called urlpatterns, which contain the routes to each view function.
 
 
+Each route is provided as a path() object that has three arguments: the URL route as a string, the name of the function 
+of the view, and an optional name used to refer to the view.
 
 
+To make Django aware of the app’s URLconf, it must be included in the project’s URLconf, also called urls.py.
 
 
+The default urls.py folder for a project looks like this:
+
+###
+
+from django.contrib import admin
+from django.urls import path
+ 
+urlpatterns = [
+  path("admin/", admin.site.urls),
+]
+
+###
 
 
+To include the app’s URLconf we import the include path from django.urls and add a path()to the urlpatterns.
+
+###
+
+from django.contrib import admin
+from django.urls import include, path
+ 
+urlpatterns = [
+  path("admin/", admin.site.urls),
+  path("", include("myapp.urls")),
+]
+
+###
+
+
+With both URLconfs set up, we can properly view our routes for the application: myapp in a web browser.
+
+
+*** You have to create a urls.py file inside the app forlder and also create the urls paths inside the urls.py file from the project directory
 
 
 
