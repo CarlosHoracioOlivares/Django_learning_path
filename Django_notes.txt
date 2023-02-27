@@ -847,6 +847,7 @@ value of our dictionary if we change our loop:
 
 ADDING URLS TO TEMPLATE
 
+
 When navigating between pages using HTML, we need the entire URL to be written out in a <a> element’s href attribute. With Django, rather 
 than using the full URL we get a shortcut by using tags and the name of predefined paths!
 
@@ -877,12 +878,76 @@ be optional in other places. The URL is a good instance of where arguments are o
 
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FILTERS IN TEMPLATES
+
+
+With Django, variables can be modified from within the template using a filter. 
+Filters modify variables passed in from views.py without the use of traditional methods like JavaScript
+
+An example filter can be seen below:
+
+###
+
+<p>{{ username|upper }}</p>
+
+###
+
+
+The filter is added onto a variable by using the | symbol inside of the variable tags with the variable. 
+The symbol goes after the variable name, and is followed by the filter that you want to use
+
+
+Some filters also require arguments, however, arguments are handled differently with filters compared to 
+how we handled arguments with URL. A filter with an argument can be seen here:
+
+
+###
+
+{{ description|truncatewords_html:2 }}
+
+###
+
+
+The truncatewords_html filter requires an argument and will shorten text down to the integer supplied by our argument. 
+In our case, we want to display 2 words max. Any other words in the description variable will be replaced with .... 
+We were able to supply our argument after the filter name separated by a :.
+
+
+Some filters also require certain data types in order to work. For instance, the time filter requires a variable 
+of data type datetime.datetime.Now(), and will not work with any other data type. It is recommended to check out the 
+documentation for a filter before using it to make sure you are using the proper data types and adding any necessary arguments.
 
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+REVIEW TEMPLATES
 
+Templates are a great way to reduce the amount of HTML that needs to be written in a website by allowing us to extend templates into the rest of the website 
+to reduce repeat code. The options provided to us can help us in a number of ways including:
 
+* Common elements should go inside of a base template, and any page-specific content should be in their own templates.
+
+* Static files have to be loaded in the template they’ll be used in, as it won’t be passed on to child templates.
+
+* Templates can also use DTL to help display variables, loop through and display dictionaries, and create conditionals within templates to reduce the number of templates needed for an application.
+
+* CSS files can be added to a template after adding a static/ folder to the application. Remember that inside of static/ there should be another folder named after the application.
+
+* Variables are great for grabbing data from views.py to display in a template.
+  if statements can be used in DTL to conditionally display content.
+
+* DTL can use for loops to go through lists.
+
+* URLs can be referenced with just the path name if the page is within the application. This only works with predefined paths and you should watch for any arguments that need to be passed.
+
+* Filters are useful for modifying variables within a template as you won’t have to write too much extra code to modify the variable yourself.
+
+* Some filters require arguments, so make sure that any filter used does not require any arguments.
+
+* Some filters also only work with specific data types, so make sure to research a filter before using one by looking at the documentation for the filter.
 
 
 
