@@ -956,31 +956,320 @@ MODELS AND DATABASES
 
 CREATING A MODEL
 
+Every time we create a new app, Django provides us with a folder structure for our work which includes a file called models.py with the following starter code:
+
+###
+
+from django.db import models
+
+###
+
+
+To create a model, we write a class, like so:
+
+###
+
+class Flower(models.Model):
+  ## Define attributes here
+  pass
+
+###
+
+Notice that our model actually inherits from the Model parent class django.db.models.Model module. These models will later inform the 
+database to use this schema to build its tables
+
+
+model.py example:
+
+###
+
+from django.db import models
+
+# Create your models here.
+class Owner(models.Model):
+  pass
+
+class Patient(models.Model):
+  pass
+
+###
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADDING MODEL FIELDS
+
+As we mentioned, models are used to represent real-life objects. We can mimic and create object attributes in our models using fields. 
+
+Fields have names and are assigned a type. For example, a Flower model can have a petal_color field that expects a string:
+
+###
+
+class Flower(models.Model):
+  petal_color = models.CharField()
+
+###
+
+
+Django uses specific field types to match the expected data with what will go into the database. 
+
+Above, we used the .CharField() type to store a short string. We can continue to add to our model and include other attributes, like petal_number.
+
+
+###
+
+class Flower(models.Model):
+  petal_color = models.CharField()
+  petal_number = models.IntegerField()
+  # More attributes… 
+
+###
+
+
+Since we want petal_number to be a number, we used the .IntegerField() field type. 
+Django provides a huge variety of field types for us to specify the data types of our model attributes, check out theField Types Documentation to 
+explore the entire list of possibilities!
+
+https://docs.djangoproject.com/en/3.1/ref/models/fields/#model-field-types
+
+
+We might also want to add constraints to our fields. 
+
+For example, we might want our petal_color field to have a max length of 20 characters. We can supply an argument like so:
+
+
+###
+
+class Flower(models.Model):
+  petal_color = models.CharField(max_length=20)
+  petal_number = models.IntegerField(default=0)
+
+###
+
+
+These arguments give us finer control over what data we want to include in our database. 
+
+For .CharField() we used max_length to limit the number of acceptable characters to 20. We can even set default values, like for petal_number, 
+we set default=0 meaning if we didn’t provide a value for petal_number the value is automatically 0.
+
+
+code example: (inside of models.py)
+
+###
+
+from django.db import models
+
+class Owner(models.Model):
+  # Delete pass and add the Owner fields
+  first_name = models.CharField(max_length=30)
+  last_name = models.CharField(max_length=30)
+  phone = models.CharField(max_length=30)
+
+class Patient(models.Model):
+  # Delete pass and add the Patient fields
+  breed = models.CharField(max_length=200)
+  pet_name = models.CharField(max_length=200)
+  age = models.IntegerField(default=0)
+
+###
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+PRIMARY KEY, FOREIGN KEY, AND RELATIONSHIPS
+
+
+Later on, we’ll use these models to create instances (specific model objects) in our database. 
+With a Flower model, we could create instances with characteristics of flowers like a rose, a sunflower, or a daisy. 
+Instances then correspond to rows, or records, in our database.
+
+
+We’d also need our instances to have a unique ID to help us keep track of each one. 
+These IDs are called primary keys and Django helps us automatically create these unique IDs by incrementing by 1 each time. 
+For example, if our first Flower instance is rose, it would have a primary key/ID of 1. 
+The second instance, sunflower, a primary key of 2 — then maybe a daisy with a primary key of 3, and so forth.
+
+
+In our apps, we often create multiple models that relate to each other in some way. 
+For our example Flower model, we could have a gardener tend to flowers! This means we need to create another model called Gardener:
+
+
+###
+
+class Gardener(models.Model):
+  first_name = models.CharField(max_length=20)
+  years_experience = models.IntegerField()
+
+###
+
+
+Now the question is how do we show this relationship between Flower and Gardener? 
+
+Well, let’s say that a Gardener instance can tend to multiple Flower instances, but a Flower instance can only have a single Gardener. 
+
+This means we have a One to Many relationship, one Gardener for multiple Flowers. Conversely, Flowers have a Many to One relationship with a Gardener.
+
+
+To make this connection known, we need to supply Flower with a foreign key of a Gardner, i.e. the Flower instances know which Gardener instance takes care of it.
+
+
+###
+
+# Garden has a one-to-many relationship with Flower
+class Gardener(models.Model):
+  first_name = models.CharField(max_length=20)
+  years_experience = models.IntegerField()
+ 
+# Flower has a many-to-one relationship with Gardener
+class Flower(models.Model):
+  petal_color = models.CharField(max_length=10)
+  petal_number = models.IntegerField()
+  gardener = models.ForeignKey(Gardener, on_delete=models.CASCADE) 
+
+###
+
+
+Notice that we added the gardener field using models.ForeignKey() and with arguments. 
+
+The first argument is Gardener because that’s the model we want this foreign key to come from. 
+
+Then we add on_delete=models.CASCADE to let Django know to delete the Flower instance if its connected Gardener instance is deleted. 
+
+
+Hypothetically, we could even supply Gardener with a foreign key as well if we wanted to link Gardener to another model, like a Garden for example! 
+
+These foreign keys tell the database that a one-to-many relationship exists and the direction of this relationship. 
+
+There are other types of relationships, but let’s implement a one-to-many relationship with our own models!
+
+https://docs.djangoproject.com/en/3.1/topics/db/examples/
 
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FIELD TYPE OPTIONAL ARGUMENTS
 
 
+We can continue to customize our models by supplying fields with options, that specify how data can be inserted into the database. 
+
+Django provides field option documentation, which shows a huge list of these options. Let’s go over some common ones together!
+
+https://docs.djangoproject.com/en/3.1/topics/db/models/#field-options
 
 
+One common option is null that can take on a value of True or False. This null option tells the database if a field can be left intentionally void of information. 
+
+By default, Django sets null=False. However, we can override the default and set null=True. Here’s an example:
 
 
+###
+
+class Flower(model.Model):
+  petal_number = models.IntegerField(max_length=20, null=True)
+  # Other fields
+
+###
 
 
+With the code above, when we create a Flower instance, we can set petal_number to null.
+
+Another common option is blank, which is similar to null, but setting blank to True means a field doesn’t have to take anything, not even a null value. 
+
+By default blank is False.
 
 
+###
+
+class Flower(model.Model):
+  nickname = models.CharField(max_length=20, blank=True)
+  # Other fields
+
+###
 
 
+Now, when we create a Flower instance, we can leave the nickname field blank.
+
+The last one we’ll touch upon is choices which limits the input a field can accept. 
+
+We can set choices by creating a list of tuples that contain 2 items: a key and a value. Take for example
 
 
+###
+
+class Flower(models.Model):
+  COLOR_CHOICES = [
+     ("R", "Red"),
+     ("Y", "Yellow"),
+     ("P", "Purple"),
+     ("O", "Other"),
+  ]
+ 
+  color = models.CharField(max_length=1, choices=COLOR_CHOICES)
+  # Other fields
+
+###
 
 
+For our Flower instance, we can specify its color with the limited choices provided — meaning our color field can only be assigned "R" (for "Red"), 
+
+"Y" (for "Yellow"), or "P" (for "Purple"), or "O" (for "Other" from the COLOR_CHOICES list. With choices we know exactly what data we can accept from users.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MODEL METADATA
+
+We’ve supplied our models with plenty of fields and data, but what about metadata? Let’s first define it.
+
+Metadata is an optional entity within a model and it is anything that is not a field. 
+Some helpful metadata can include how to order instances, create human-readable names, providing a database table name, and more.
+
+https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+
+***
+
+Data that provide information about other data. Metadata summarizes basic information about data, making finding & working with particular instances of data easier. 
+Metadata can be created manually to be more accurate, or automatically and contain more basic information
+
+***
 
 
+To add metadata to a model, we’ll need to nest another class called Meta inside the model’s class definition. Let’s use metadata to order instances as an example:
+
+###
+
+class Flower(models.Model):
+  name = models.CharField(max_length=10)
+  # All the other attributes
+ 
+  class Meta:
+    ordering = ["name"]
+
+###
 
 
+In this case, we created an attribute, ordering which takes a list of strings (["name"]) that determine the ordering. 
+Later on, when we need to search for Flower instances, the database will return back a list with the list ordered by the name field. 
+We can even reverse the order by adding a - in front of a string like ["-name"].
+
+
+Other metadata work in a similar fashion. Let’s try adding a verbose human-readable name:
+
+###
+
+class TropicalFlower(models.Model):
+  # Fields and Methods
+ 
+  class Meta:
+    verbose_name = "tropical flower" 
+
+###
+
+
+Without setting this metadata, our model’s name would be tropical_flower by default, here we’ve assigned the verbose name to be "tropical flower". 
+
+While our change was subtle, we could provide even more detail to inform other developers about our model.
 
 
 
