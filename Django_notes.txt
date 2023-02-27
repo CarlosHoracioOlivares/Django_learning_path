@@ -950,6 +950,12 @@ to reduce repeat code. The options provided to us can help us in a number of way
 * Some filters also only work with specific data types, so make sure to research a filter before using one by looking at the documentation for the filter.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MODELS AND DATABASES
+
+CREATING A MODEL
+
 
 
 
