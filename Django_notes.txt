@@ -1272,6 +1272,154 @@ Without setting this metadata, our model’s name would be tropical_flower by de
 While our change was subtle, we could provide even more detail to inform other developers about our model.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+NATIVE MODEL METHODS
+
+Methods are functions defined in our model that describe the behaviors and actions of our model. 
+
+If properties are what our models are, then methods are what our models do. For example, our flower might bloom() and grow().
+
+
+In Python classes, which Django uses to create models, there are built-in methods we can override like the __str__ method. 
+All this means is we are creating a method using the same name as the built-in one. This is how we, the programmer, take control, or “override”, the default behavior of the built-in version:
+
+###
+
+class Gardener(models.Model):
+  name = models.CharField(max_length=30)
+ 
+  def __str__(self):
+    return self.name
+
+###
+
+
+Methods always require the first parameter to be self, then we can provide other optional parameters and add logic within the method body.
+
+In the next lesson, we’ll learn how useful overriding __str__ is when we need to retrieve instances of models from our database — by default, 
+if we didn’t override __str__ printing our instances would generate output that’s hard to read like:
+
+
+***
+
+<QuerySet [<Gardener:>,<Gardener:>,<Gardener:>....]
+
+***
+
+But with our overridden __str__ method, we’ll get more helpful information, in this case, we’re returning the Gardener instance’s name:
+
+***
+
+<QuerySet [<Gardener: Linnaeus>,<Gardener: Mendel>, <Gardener: Carver >....]
+
+***
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CUSTOM MODEL METHODS
+
+In addition to overriding native methods, we can define our own custom methods!
+
+We can do something simple like returning a boolean:
+
+
+###
+
+class Flower(models.Model):
+  has_sunlight = models.BooleanField(default=True)
+  has_water = models.BooleanField(default=True)
+ 
+  def can_grow(self):
+    return self.has_sunlight and self.has_water
+
+###
+
+
+Above, we defined our custom .can_grow() method that checks if the instance’s .has_sunlight and .has_water fields are True. Notice that even for custom methods, we need to provide the first parameter as self. We can also provide additional parameters as needed.
+
+Here’s another example that returns a string:
+
+
+###
+
+class Gardener(models.Model):
+  years_experience = models.IntegerField()
+ 
+  def identify_flower(self, flower):
+    return f"I've studied flowers for {self.years_experience}. I believe this flower is {flower.name} and is found in {flower.native_env}." 
+
+###
+
+In this case, we’ve added a second parameter to our method, a flower instance, and returned a string. Both methods do different things but 
+both help emulate real-life behaviors.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MIGRATIONS - MAKEMIGRATIONS
+
+From when we first created our project, we’ve configured some database settings and let our project know about our app in settings.py. 
+Now we need to let our database know about our models.
+
+
+This step of setting the database to match the structure of the models is called migration. Remember, migrations are needed when we make changes to our models — and we’ve just made two new ones! 
+
+Remember, migrations are needed when we make changes to our models — and we’ve just made two new ones!
+
+Migrations documentation: https://docs.djangoproject.com/en/3.1/topics/migrations/
+
+
+In Django, there are two steps necessary to make this migration happen:
+
+1) Running python3 manage.py makemigrations -> to create a file with the instructions needed for our database to create the proper schemas.
+
+2) Running python3 manage.py migrate -> to execute the instructions in our file to create the actual tables in our database.
+
+
+We’ll first focus on makemigrations. Since we need to use manage.py to execute this step, we need to be in our root folder to execute:
+
+###
+
+python3 manage.py makemigrations
+
+###
+
+
+Using our hypothetical Flower and Gardener example, we should see something similar to:
+
+
+***
+
+Migrations for 'gardens':
+  gardens/migrations/0001_initial.py
+    - Create model Flower
+    - Create model Gardener
+
+***
+
+
+We can also provide an additional argument after makemigrations and specify a chosen app’s models we want to commit. For instance, if we had two apps Garden and FlowerShop and we only wanted to commit the models for Garden, we could execute the command: python3 manage.py makemigrations garden.
+
+
+The files created from this step live in the migrations folder within our app directory. Our first migration file would begin with 0001_initial.py. We can refer to our migrations using the starting numbers, in this case, it has a migration name of 0001.
+
+
+It’s important that every time we need to make a change to the schema in our database we need to do this makemigrations step! Subsequent migration files will increase the number at the beginning of the file. For example, the second migration will begin with 0002_xxxxx.py and so forth.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MIGRATIONS - MIGRATE
+
+With our migration file set up, it’s time to use the code in our file to make changes to our database.
+
+
+
+
+
+
 
 
 
