@@ -1865,6 +1865,12 @@ REVIEW
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+REVISITING VIEWS
+
+Templates show information to the user and models are the source of that information. This means we need something to determine what we should take from the source to present to our users. This is the purpose of views to act as the middleman coordinating this flow of information.
+
+By setting up a view for templates, our data can be much more dynamic and render more relevant info to our users giving them a customized experience. You’ve already seen how a basic view works, now let’s learn more advanced ways of Django!
+
 
 
 
