@@ -1415,6 +1415,109 @@ MIGRATIONS - MIGRATE
 
 With our migration file set up, it’s time to use the code in our file to make changes to our database.
 
+The command to execute at the terminal would be:
+
+###
+
+python3 manage.py migrate
+
+###
+
+Like makemigrations, if our project supports multiple apps, we can pass in the particular app name to the migrate command as well. For example:
+
+###
+
+python3 manage.py migrate garden
+
+###
+
+
+Where garden is the name of our app. We should see some output like:
+
+***
+
+Operations to perform:
+  Apply all migrations: gardens
+Running migrations:
+  Rendering model states... DONE
+  Applying garden.0001_initial... OK
+
+***
+
+After executing the migrate command, our database is set up! Under the hood, Django is handling the SQL commands needed to make this migration happen — however, that’s beyond this lesson’s scope.
+
+If we need to reverse a migration, Django also makes this possible by specifying the migration we want to revert back to:
+
+###
+
+python3 manage.py migrate <migration_name>
+
+###
+
+
+Where we replace <migration_name> with the name of the migration like 0001. Then the database’s schema reverts back to the model from our 0001 migration!
+
+
+However, in some cases, migrations cannot be unapplied like if we dropped a table in a previous migration. In such cases, we’ll get an IrreversibleError. Check out Django’s documentation for more information.
+
+
+https://docs.djangoproject.com/en/3.1/topics/migrations/#reversing-migrations
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Migrations REVIEW
+
+* A schema is a structure we design for the data in our application.
+
+* A model is a Python class that contains characteristics and behavior using: attributes, metadata, and methods.
+
+* Model attributes are implemented using Django field names and different field types.
+
+* Django models can relate to other models. One way of showing this connection is to use a foreign key.
+
+* Django field types accept optional keyword arguments based on key-value pairs such as null, blank, choices, default, and primary_key.
+
+* Models can contain metadata using a nested Meta class and providing specific attributes.
+
+* Models can have methods that are functions specific to that model. Some methods are inherited from the parent Model class.
+
+* Django requires that we commit our models to the database via a two-step migration procedure with makemigrations and migrate.
+
+* Django lets us undo one or more migrations by supplying the migrate command with a named migration.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CRUD MODEL -> CREATE, READ, UPDATE, DELETE
+
+So far we’ve set up our models and database. But now it’s important that we are able to interact with our database to:
+
+* Create new information
+
+* Read specific information
+
+* Update information
+
+* Delete information
+
+
+These are the four basic functions of a database also known as CRUD. Being able to perform these actions on our database allows us to have more control over our website and introduce more complexity.
+
+In order for us to communicate with the database and perform CRUD functionalities, we can use Structured Query Language, also known as SQL. We can think of it as a bridge connecting our project and the database together. Raw SQL can be time-consuming but since we’re using the Django framework, any SQL needed is handled through the QuerySet API. This API, provided by Django, converts our Python queries into SQL to communicate with the database.
+
+https://docs.djangoproject.com/en/3.1/ref/models/querysets/
+
+
+
+
+
+
+
+
+
+
 
 
 
