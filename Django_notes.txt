@@ -1707,26 +1707,111 @@ Again, views.StudentUpdate.as_view() is the second argument — the intention is
 We’ve also given a name value so we can reference it in the future. This way, we’ll be able to access any student and render their information dynamically!
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+RENDERING A 404
+
+We’ve seen how to make use of views and templates by delegating data and rendering different content. However, what if a user tries to navigate to a non-existing page? In that case, it would be useful to return a 404 page that tells our users that such a page doesn’t exist!
+
+* https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+
+This behavior is so common that Django even provides a built-in view to serve a 404 page! We need to import the Http404class — which is an exception class, meaning it’ll return an error.
+
+It’s important to write out code that takes into account any potential errors. So we have to figure out what conditions might lead to a 404 error being raised and make sure we handle that exception. 
+
+We can do this by adding a try /except statement. The try block lets us test a block of code for errors and if an error is found, the except block will be executed. For example:
+
+###
+
+# views.py
+
+from django.http import Http404
+ 
+def product_detail_view(request, id):
+  try:
+    obj = Products.objects.get(pk=id)
+  except Products.DoesNotExist:
+    raise Http404()
+ 
+  return render(request, "products/detail.html", {"object": obj})
+
+###
+
+In the example above we’re looking for a specific product by id within the try block. 
+
+If we’re unable to find the product, the except block is executed. The except block is using the DoesNotExist exception which is raised when an object is not found for the given arguments of a query. 
+
+However, if the object is found, we return the page that the user is looking for.
+
+Generally, Django handles a lot of 404 errors for us, but it’s good to know how to implement logic when the need arises!
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+UPDATING URLS IN TEMPLATES
+
+When writing out paths in our URLConf, we looked into how to add a class-based view to be used in our paths. Consider the following piece of code:
+
+###
+
+# urls.py
+
+urlpatterns = [
+  path("books/", views.BookList.as_view(), name="booklist"),
+  path("books/update/<pk>", views.BookUpdate.as_view(), name="bookupdate")
+]
+
+###
 
 
+In the example above, we have a class-based view called BookList with the name attribute: "booklist". 
 
+When using class-based views, Django is smart enough to look into our template/ folder for an HTML file of the snake-case version of the same name (i.e book_list.html instead of BookList.html). 
 
+We know that this template is given information from the view, but how do we access this information?
 
+Within our template, we’ll be able to retrieve all of the records in our database through the BookList class:
 
+###
 
+<!-- /templates/book_list.html -->
+ 
+{% for book in book_list %}
+<tr>
+  <td>{{ book.title }} </td>
+  <td>{{ book.author }} </td>
+</tr>
+{% endfor %}
 
+###
 
+In the example above, we’re looping over all our book objects in our database, and by using interpolation we can access attributes from each book such as author and title.
 
+We also looked in a previous exercise how we can make use of the primary key in dynamic URLs. 
 
+Let’s assume we want to have a link attached to each book in order to delete it from the list and our database. 
 
+In this case, we can make use of the name attribute from our book update path.
 
+###
 
+<!-- /templates/book_list.html -->
+ 
+{% for book in book_list %}
+<tr>
+  <td>{{ book.title }} </td>
+  <td>{{ book.author }} </td>
+  <td><a href="{% url 'bookupdate' book.id %}"><button>Update</button></a></td>
+</tr>
+{% endfor %}
 
+###
 
+Notice the <a> element is using Python’s template for the href attribute. 
 
+In this case, we’re adding the value used for the name attribute in our URLConf: bookupdate. 
 
+Moreover, we’re able to specify which book we want to update by accessing its id attribute.
 
 
 
