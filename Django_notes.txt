@@ -1533,11 +1533,195 @@ Within home_view() we’re also making use of the function render(). As we saw p
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-CLASS BASED VIEWS
+CLASS BASED VIEWS -> https://docs.djangoproject.com/en/3.1/topics/class-based-views/generic-display/
 
-We’ve explored how to write view functions in order to render templates and return them to the browser. In this exercise, we’ll look into how to use class-based views and implement generic views in order to keep our code clean and DRY.
+We’ve explored how to write view functions in order to render templates and return them to the browser. In this exercise, we’ll look into how to use class-based views and implement generic views in order to keep our code clean and DRY. (DRY -> Dont Repeat Yourself)
 
 https://docs.djangoproject.com/en/3.1/topics/class-based-views/generic-display/
+
+Django provides us with base views that are inherited from the class view. A number of these existing generic view functions include built-in logic and provide utilities — better yet, we can combine these generics with our own written code!
+
+Consider an application that keeps track of students in a classroom. We’ll make use of a model, Student, which holds the following fields:
+
+###
+
+# models.py
+ 
+class Student(models.Model):
+  first_name = models.CharField(max_length=30)
+  last_name = models.CharField(max_length=30)
+  grade = models.CharField(max_length=30)
+
+###
+
+Let’s say we want to create a view that displays all of the students in a table. We could do this manually by writing a query to retrieve all the students and then pass the list to a template.
+
+Alternatively, we could make use of a generic view called Listview. This view does exactly what we need and takes care of the logic in order to display multiple instances of a table in the database.
+
+If we want to use some of these generic views we must first import them from django.views.generic at the top of our file, along with our Student model:
+
+###
+
+# views.py
+ 
+from .models import Student
+from django.views.generic import ListView
+
+###
+
+Once imported we can specify what model we’ll be using the ListView for:
+
+###
+
+# views.py
+ 
+class StudentList(ListView):
+  model = Student
+  template_name = "schoolapp/student.html"
+
+###
+
+Notice how we changed the view from function to a class now — we even provided properties! These properties allow us to modify our view class to incorporate other information. 
+
+Upon specifying the model we’re using Django will automatically try to find a template in <the_app_name>/<chosen_model_name>.html. 
+
+Alternatively, we could explicitly tell the view which template to use by adding a template_name attribute to the view, as well as specifying the model with the model attribute. 
+
+In this case, we specified the model as Student and explicitly set template_name as the "schoolapp/student.html" template.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CRUD THROUGH CLASS BASED VIEWS
+
+Class-based views set up a lot of functionality automatically for us. In the previous exercise, we were able to list out (i.e. Read) instances. This time around let’s add in the rest of the CRUD functionality using generic views.
+
+https://docs.djangoproject.com/en/3.1/topics/class-based-views/generic-display/
+
+The same general syntax patterns exist for all 4 generic views, however, there are some slight differences. For example, if we go back to thinking about a Student model, here’s how we could add a view to create a Student instance:
+
+###
+
+# views.py
+ 
+from .models import Student
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView
+ 
+class StudentCreate(CreateView):
+  model = Student
+  template_name = "schoolapp/student_create_form.html"
+  fields = ["first_name", "last_name", "grade"]
+
+###
+
+The syntax looks very similar, but let’s go over some key differences:
+
+* Notice that we first have also import CreateView from another module, django.views.generic.edit.
+
+* In the new class’s name, we append Create to the model name to get StudentCreate.
+
+* The argument is also different and is now CreateView.
+
+* The model remains the same, we still need to set the model we want this view to reference.
+
+* The template (template_name) is also different. That is because to create a Student instance, we’ll need to get some user input which means we should create a form               
+  template!
+
+* Speaking of input, to know what should go in the form, we have to provide a fields property. This is an array that contains a list of the model’s fields as strings.
+  In this case, we’re supplying our form template will include the options to fill in information about a student’s “first_name”, “last_name”, and “grade”.
+
+*** Note: We’ll cover more on forms later, for now, we’ll focus on setting up the views. ***
+
+Both the UpdateView and DeleteView resemble CreateView very closely — so let’s learn how to implement both by writing them ourselves!
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADDING VIEWS TO urls.py
+
+Now that we have completed the logic to work with class-based views, we can implement them into our URLconf so that they’re accessible when navigating to specific endpoints.
+
+https://docs.djangoproject.com/en/3.1/topics/http/urls/#overview
+
+However, there’s a problem because Django’s URL resolver is expecting to send a request to a callable function, not a class! Therefore, class-based views have a .as_view() method, which works its magic in order to render the appropriate logic:
+
+###
+
+# urls.py
+ 
+urlpatterns = [
+  path("students/", views.StudentList.as_view(), name="studentlist")
+]
+
+###
+
+In the code above, we’re making a call to .as_view() which is a class method for our generic view, StudentList. 
+
+We’re also adding the name attribute here. 
+
+By assigning a name, we can quickly reference this URL using its name value in our views and templates instead of the entire lengthy URL. 
+
+Now, if we make any future changes made to the URL path, Django automatically updates the URL definitions in view methods and templates. 
+
+Therefore, even if the URL path changes, the name remains the same and Django will know from the name what the updated URL path is. We’ll see this behavior in later lessons when we reference a URL path in templates or redirections.
+
+
+Once implemented, we can access the path students/ and our template will be rendered along with the data from our database regarding all the students.
+
+Let’s add some paths to list out instances and also write a new path that will help create instances! In the next exercise, we’ll make our list route fully functionally by adding the rest of CRUD.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+USING PRIMARY KEYS IN URLS
+
+We just saw how we can view an entire list of models and create new models. But what if we want to access existing individual instances by updating or deleting them?
+
+In this case, we can make use of our model’s primary key (also known as the ID). To navigate to a specific record of an instance, a primary key will be attached to our path. 
+
+Let’s say we land on our Student list page and we’ve displayed a table of students. We click on the 10th student on the list and we’re directed to the path: student/10. In our URLconf, we can capture this primary key by using angle brackets:
+
+###
+
+# urls.py
+ 
+urlpatterns = [
+  # ... Other paths
+  path("students/", views.StudentList.as_view(), name="studentlist"),
+  path("students/<pk>", views.StudentUpdate.as_view(), name="studentupdate")
+]
+
+###
+
+In this case, Django knows to look for the primary key (the value is replaced by the placeholder: <pk>) in our database and render that specific record.
+
+If we navigate to students/4, Django would grab the value, 4, as the primary key and access the database in order to retrieve that record.
+
+Notice that the other than the <pk> portion, we’re using the same syntax. 
+
+Again, views.StudentUpdate.as_view() is the second argument — the intention is for this view to allow users to change/update specific students’ information. 
+
+We’ve also given a name value so we can reference it in the future. This way, we’ll be able to access any student and render their information dynamically!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
