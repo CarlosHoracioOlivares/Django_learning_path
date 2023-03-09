@@ -1964,6 +1964,131 @@ if form.is_valid():
 ###
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FORMS -> SUBMITTING A FORM
+
+In Django, we’ll be using the "POST" method when the form is submitted, which means all of the data from the forms will be sent to the POST method in views.py.
+
+Before we go into accessing the POST data, we need to understand that the logic is stored in the same function in views.py that renders the template. 
+
+Therefore, to differentiate how the view function should treat a POST request vs rendering the usual form, we use an if statement. This if statement checks that the request method is "POST". Here’s an example for how to structure our view function that handles the rendering logic:
+
+###
+
+#views.py
+
+from .models import Model_Name
+ 
+def renderTemplate(request):
+  if request.method == "POST":
+    test_model = Model_Name()
+    test_model.field = request.POST["field_name"]
+    test_model.save()
+  return render(request, "template_with_form.html")
+
+###
+
+The first thing that needs to be done is to check if the request.method is equal to "POST". When the method is "POST", it means that the form was submitted which means that we can grab all the data and use it to create a new model instance. Notice our test_model is a new Model_Name(). 
+
+We then assign the test_model.field a value of request.POST["field_name"]. This is because in our form, we had an input field with a name set to "field_name". 
+
+The request.POST["field_name"] syntax shows that request is treated like a dictionary with a "field_name" property. Once all of the data from request.POST is added to the model, we can save the model and render the form again.
+
+If our conditional isn’t met, it usually means that the form is being rendered for the first time, so we can skip the instance creation and just render the form as normal.
+
+Aside from re-rendering the template, we could also redirect to a new template! We’ll discuss redirecting in more detail later.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FORMS -> GENERICS IN DJANGO: FORMS.PY
+
+Django can also help streamline the form creation process for us! We first need to create a file called forms.py which houses the general structure for any form we want in the application. forms.py should be created in the base directory of the application. So for our program, the path should look: vetoffice/forms.py
+
+Django forms are used with built-in generic classes to help build the forms in the template. The code below will show a basic forms.py setup:
+
+###
+
+#forms.py
+
+from django import forms
+from .models import User
+ 
+class TestForm(forms.ModelForm):
+  class Meta:
+    model = User
+    fields = ("username")
+
+###
+
+The first thing that needs to be done in forms.py is that we need to import forms from django and import any model we’ll be using from .models. Then we can start constructing separate classes for each form we want to build. In this example, we created a new class called TestForm. TestForm takes in one parameter called forms.ModelForm which is used to help build these forms in the template.
+
+Inside of the TestForm class is class Meta. This inner Meta class is used to let the application know what is inside of the parent class. Notice that we have two properties in the Meta class:
+
+* model which tells the app what model we’ll be using
+
+	* In the example, we’re using the User model
+
+* fields which can be a tuple or list that informs the app what fields to use
+
+	* In the example, we’re using one field, "username"
+
+If we wanted to include every field of a model, instead of writing it all out inside of the fields list, we could include one string that says '__all__' to indicate that we want every field to be used.
+
+https://docs.djangoproject.com/en/3.1/ref/class-based-views/generic-display/
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FORMS -> GENERICS IN DJANGO: VIEWS.PY
+
+Now that we have the form made in forms.py, we can wire up our views.py classes to render our templates. Remember we’ll need to import both our form and our generic views:
+
+###
+
+#views.py
+
+from .forms import TestForm
+from django.views.generic.edit import CreateView
+
+###
+
+Recall that we had to create a class for TestForm in views.py. This class is usually named after the form, followed by the type of view being created. For instance, with our TestForm, we would make a new class that’s called TestFormCreate that takes in CreateView. A sample of this class is below.
+
+###
+
+#views.py
+
+class TestFormCreate(CreateView):
+  model = TestModel
+  template_name = "appName/form_template.html"
+  form_class = TestForm
+
+###
+
+This class has three properties as seen above, those being the model, the template_name, and the form_class. The model is assigned the model we want to use. 
+
+The template_name is the template file that we want the form to be used in. 
+
+And the form_class is going to be the class that we created in forms.py. The form_class will also tell Django to use this form within the template when building the form for us.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
