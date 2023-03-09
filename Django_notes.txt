@@ -1914,6 +1914,67 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
 * THE FORMS ARE CREATED INSIDE THE TEMPLATE FOLDER AS .HTML
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FORMS -> FORM SECURITY
+
+When building any online form, proper defenses need to be made to protect the application from any malicious users. This is because any form is susceptible to attacks including Cross Site Request Forgery attacks, or CSRF attacks. 
+
+These attacks happen when a user uses another user’s credentials without their knowledge and executes malicious actions.
+
+Django has a built in method for defending against CSRF attacks by including a CSRF token. The CSRF token protects the application and the user by adding a secret token inside of the "POST" methods in the forms each time the form is rendered. 
+
+The CSRF token ensures that only the proper user is using the proper credentials.
+
+The best way to add this token is to add a tag to the template inside of the <form> element:
+
+###
+
+<form>
+  {% csrf_token %}
+  ...
+</form>
+
+###
+
+This token adds all the necessary security to help defend from possible CSRF attacks and is conventionally placed at the beginning of the form.
+
+Form validation is also necessary to help defend out applications from possible attacks that use incorrect data types to cause problems, e.g. SQL attacks. This validation can include ensuring only specific data types are being submitted to protect our database.
+
+Form validation is usually done in views.py in Django, and consists of an if statement before assigning data from the form to the database:
+
+###
+
+if form.is_valid():
+  form = form.save()
+
+###
+
+Notice how Django makes it easy to secure our application!
+
+https://docs.djangoproject.com/en/3.1/ref/csrf/
+
+** WE NEED TO ADD THE CSRF TOKEN TO THE FORM AND TO VIEWS.PY THE FOLLOWING CODE:
+
+###
+
+if form.is_valid():
+  form = form.save()
+
+###
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
