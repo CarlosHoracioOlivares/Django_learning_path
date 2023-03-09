@@ -2074,19 +2074,80 @@ The template_name is the template file that we want the form to be used in.
 And the form_class is going to be the class that we created in forms.py. The form_class will also tell Django to use this form within the template when building the form for us.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FORMS -> GENERICS IN DJANGO: PATHS & TEMPLATES
+
+Once the class is created in views.py, a path needs to be added to urls.py so that the template can be rendered. The following path() syntax should look familiar:
+
+###
+
+#urls.py
+
+path("path/name", views.TestFormCreate.as_view(), name="testformcreate"),
+
+###
+
+Now we can actually create the template that will house the form. This template will just be a normal template and will be stored with all the other templates. The file path should look like this:
+
+***
+
+appname/
+├─ manage.py
+└─ mysite/
+    └─ templates
+        └─ mysite/
+            └─ form_template.html
+
+***
+
+This template will be treated as a normal template, meaning that it will usually extend from base.html and include blocks. Inside of the content blocks will be the following code.
+
+###
+
+#template_<name>.html
+
+{% extends "appname/base.html" %}
+ 
+{% block content %}
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Submit"/>
+</form>
+{% endblock %}
+
+###
+
+This code looks very similar to a normal HTML form, including the form element with the method being "POST", a csrf_token, and an <input> element of type "submit". However, the entirety of the form is inside of the variable tag, using form.as_p. Conveniently, form.as_p tells the DTL to render all of the fields we included as form inputs neatly inside <p> elements.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+FORMS -> REDIRECTING
 
+After a user submits their data, they should be redirected to another page. Otherwise, the user might resubmit data again and create duplicates. The Django convention is to create a .get_absolute_url() method.
 
+The .get_absolute_url() method goes inside of models.py and inside of the class of the model that the form is using. For instance, if we had used a model called TestModel in our forms, the TestModel class would look like this in models.py:
 
+###
 
+#model.py
 
+class TestModel(models.Model):
+  field1 = models.CharField()
+  field2 = models.CharField()
+ 
+  def get_absolute_url(self):
+    return "list"
 
+###
 
+The method get_absolute_url() has one parameter, self, and the method is used to direct users to a specific path. Notice that we have the method returning a string, which is the relative path name. 
 
+This string tells Django where to redirect our users to after submitting their form. In the case described above, the users will be redirected to the "model/list" path even though we’re only returning "list" — that’s because Django is configured to assume we want to send users somewhere related to the model.
 
-
+By adding one method, Django lowers the chance of our users re-submitting a form, or wondering if their information got sent!
 
 
 
