@@ -2150,14 +2150,66 @@ This string tells Django where to redirect our users to after submitting their f
 By adding one method, Django lowers the chance of our users re-submitting a form, or wondering if their information got sent!
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADMIN AND AUTHENTICATION -> ADMIN ACCOUNT
+
+The admin interface is a management tool that gives us control of creating, updating, reading, and deleting records from our database.
+
+This makes it very easy to test our models and ensure that we’re retrieving or creating data correctly.
+
+In order to access the Admin interface, we must first programmatically create a superuser. In Django, a superuser has the permissions to freely control data. 
+
+To create a superuser, we can type the following command in our terminal:
+
+* python3 manage.py createsuperuser
+
+The shell will prompt us to type in a username, email, and password. Once completed, we can navigate to the /admin route and log in with the credentials we just used to create our superuser.
+
+If we get redirected to the index page, that means our login was successful!
+
+It’s imperative to not share this information with anyone since the admin account has complete control of all your records in the database. 
+
+In case you forget your admin username you can always reset through the User object.
+
+https://docs.djangoproject.com/en/3.1/ref/contrib/auth/
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADMIN AND AUTHENTICATION -> REGISTERING TABLES IN ADMIN
+
+Now that we have access to the admin interface, let’s explore how we can use it to interact with our database records.
+
+Consider an application that keeps track of all the books we’ve read. Within our application, we have a model called Book that holds information about each book (title, author, date of publication, etc).
+
+In order to be able to interact with a database table through the admin interface, we first need to register the model. Registering and configuring a model is done by adding the models into the app’s admin.py file.
+
+###
+
+# myapp_root/book_catalog/admin.py
+ 
+from .models import Book
+ 
+admin.site.register(Book)
+
+###
 
 
+Notice that we’ve first imported the Book model. Then we called the register() method:
+
+###
+
+admin.site.register(Book)
+
+###
 
 
+After we save our admin.py file, the /admin route will display our registered model, Book. If we registered more models, they would be grouped by the installed application.
 
+From the /admin page, we can click on the collection of Books and we’ll be directed to a table that shows us all the information and records held in this database table. Now we’re able to manually create, update, read, or delete any record using the admin interface!
 
+Note: It’s important to remember that the admin interface is not something to be shared with any user. We wouldn’t want all of our users to have access to the interface and manipulate records as they wish!
 
 
 
