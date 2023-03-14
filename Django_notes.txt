@@ -2212,9 +2212,103 @@ From the /admin page, we can click on the collection of Books and we’ll be dir
 Note: It’s important to remember that the admin interface is not something to be shared with any user. We wouldn’t want all of our users to have access to the interface and manipulate records as they wish!
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADMIN AND AUTHENTICATION -> USER OBJECTS
+
+We’ve seen how powerful Django’s admin interface is in order to manipulate records in our database. However, this is not the only way!
+
+In the shell, we can manage our users programmatically using one of the core objects in Django’s authentication system, the User object. 
+
+The object can be imported from django.contrib.auth.models and comes with a number of helper methods including one to create users, .create_user(). 
+
+This method can take a username, email, and password as arguments:
+
+###
+
+user = User.objects.create_user(username="myusername", email="myemail@crazymail.com", password="mypassword")
+
+###
+
+The .create_user() method will automatically create and save the user to the database. 
+We also gain a security feature because this method also automatically hashes the password so it’s not stored as a plain string value in the database. 
+
+Moreover, we can call the .save() method in order to save the user object back to the database if we make any further changes.
+
+Moreover, the User object also contains other primary attributes such as: first_name, last_name, email, username, and password. 
+
+Additionally, we can handle a wide range of tasks from updating a user’s email address, to changing their password or even deleting a user.
+
+Note: When working with the Python shell, if you want to exit at any time you can type Ctrl+Z on Windows, Ctrl+D on Mac or type and run exit().
 
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADMIN AND AUTHENTICATION -> AUTHENTICATING USERS
+
+We know that authenticating a user entails matching credentials sent from the client against the server’s stored data. If the information matches, then access will be granted.
+
+The process of authenticating a user is all done on the server-side of our applications. To be more specific, we can add this logic in a view function that will accept credentials and make use of the authenticate() function to verify a user.
+
+authenticate() takes credentials as keyword arguments, with username and password for the default case. If the credentials are valid, a User object will be returned, otherwise, a PermissionDenied exception is raised which returns None.
+
+We can capture the fields from a log in form with request.POST, which is a dictionary-like object that lets you access submitted data by key name. If we have a field for username, we can retrieve that value with request.POST["username"].
+
+Let’s break down how this function would work:
+
+###
+
+from django.contrib.auth import authenticate
+ 
+def login_view(request):
+  # Both username and password are captured from the submitted log in form
+  username = request.POST["username"]
+  password = request.POST["password"]
+ 
+  # Both username and password are passed into the authenticate() method to verify the user
+  user = authenticate(request, username=username, password=password)
+ 
+  # If the user is valid, then a user object is returned.
+  if user is not None:
+    # Log in user and redirect them
+    return redirect("home.html")
+  else:
+    return HttpResponse("Invalid credentials!")
+
+###
+
+In the code above we first import authenticate from the auth library provided by Django. We then store the values of our username and password provided from the log in form with request.POST into variables, username and password respectively.
+
+Once those values are stored in variables, we can then pass them as arguments into the authenticate function:
+
+###
+
+authenticate(request, username=username, password=password)
+
+###
+
+For best practices, we make use of an if/else statement to check if the user was authenticated successfully. 
+
+This allows us to handle any exceptions in case an unauthenticated user tries to log in. 
+
+If the credentials were valid, and a User object is returned, we can log them in (we’ll look into this in the next lesson) and redirect them to a new page.
+
+Notice how we’re making use of a handy function provided by Django, redirect(). This function is imported from django.shortcuts and allows us to redirect a user to a specific view by passing in the name of a view.
+
+Otherwise, the else code block is executed and sends an HttpResponse with the text“Invalid credentials!”`.
+
+With just a few lines of code, Django allows us to authenticate users seamlessly!
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ADMIN AND AUTHENTICATION -> LOG IN
+
+After a user object is created, they can use those credentials to log in to gain access to the site. 
+
+In order to log in a user, we can make use of the login() function provided by Django:
 
 
 
